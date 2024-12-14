@@ -1,0 +1,55 @@
+syntax= "proto3";
+
+package fileservice;
+option go_package = "./;server";
+
+service FileService {
+  rpc UploadFile(stream UploadFileRequest) returns (UploadFileResponse) {}
+  rpc DownloadFile(DownloadFileRequest) returns (stream DownloadFileResponse) {}
+  rpc ListFiles(ListFilesRequest) returns (ListFilesResponse) {}
+}
+
+message UploadFileRequest {
+  oneof data {
+    FileInfo info = 1;
+    bytes chunk_data = 2;
+  }
+}
+
+message FileInfo {
+  string filename = 1;
+  string content_type = 2;
+}
+
+message UploadFileResponse {
+  string id = 1;
+  string filename = 2;
+  int64 size = 3;
+  int64 created_at = 4;
+}
+
+message ListFilesRequest {
+  int32 page_size = 1;
+  int32 page_number = 2;
+}
+
+message FileMetadata {
+  string id = 1;
+  string filename = 2;
+  int64 size = 3;
+  int64 created_at = 4;
+  int64 updated_at = 5;
+}
+
+message ListFilesResponse {
+  repeated FileMetadata files = 1;
+  int32 total_count = 2;
+}
+
+message DownloadFileRequest {
+  string id = 1;
+}
+
+message DownloadFileResponse {
+  bytes chunk_data = 1;
+}
